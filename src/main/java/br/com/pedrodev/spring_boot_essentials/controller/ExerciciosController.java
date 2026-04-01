@@ -42,6 +42,12 @@ public class ExerciciosController {
         return exerciciosService.save(dto);
     }
 
+    @PutMapping("/{nome}")
+    @ResponseStatus(HttpStatus.OK)
+    public ExerciciosDto update(@PathVariable String nome, @Valid @RequestBody ExerciciosDto dto) {
+        return exerciciosService.update(nome, dto);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer id) {

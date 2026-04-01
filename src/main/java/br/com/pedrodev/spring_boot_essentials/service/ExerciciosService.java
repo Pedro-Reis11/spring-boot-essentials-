@@ -31,14 +31,18 @@ public class ExerciciosService {
 
     public ExerciciosDto save(ExerciciosDto dto) {
         ExerciciosEntity entity = exerciciosMapper.toEntity(dto);
-        ExerciciosEntity saved = exerciciosRepository.save(entity);
-        return exerciciosMapper.toDto(saved);
+        return exerciciosMapper.toDto(exerciciosRepository.save(entity));
+    }
+
+    public ExerciciosDto update(String nome, ExerciciosDto dto) {
+        ExerciciosEntity entity = exerciciosRepository.findByNome(nome)
+                .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+        exerciciosMapper.updateEntityFromDto(dto, entity);
+        return exerciciosMapper.toDto(exerciciosRepository.save(entity));
     }
 
     @Transactional
     public void delete(Integer id) {
         exerciciosRepository.deleteById(id);
     }
-
-
 }

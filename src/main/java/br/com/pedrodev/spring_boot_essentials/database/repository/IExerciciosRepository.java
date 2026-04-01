@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IExerciciosRepository extends JpaRepository<ExerciciosEntity, Integer> {
 
     List<ExerciciosEntity> findByGrupoMuscular(String grupoMuscular);
 
     List<ExerciciosEntity> findAllByOrderByGrupoMuscularAsc();
+
+    Optional<ExerciciosEntity> findByNome(String nome);
 
 //    @Query(value = """
 //        SELECT e
