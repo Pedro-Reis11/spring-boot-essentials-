@@ -1,5 +1,5 @@
 package br.com.pedrodev.spring_boot_essentials.dto;
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 public class AvaliacaoFisicaDto {
 
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer idAluno;
     @NotNull
     private BigDecimal peso;

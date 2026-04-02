@@ -8,6 +8,8 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/avaliacoes")
 @RequiredArgsConstructor
@@ -15,9 +17,10 @@ public class AvaliacoesFisicasController {
 
     private final AvaliacaoFisicaService avaliacaoFisicaService;
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createAvaliacaoFisica(@Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
-        avaliacaoFisicaService.criarAvaliacaoFisica(dto);
+    public AvaliacaoFisicaDto createAvaliacaoFisica(@Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
+        return avaliacaoFisicaService.criarAvaliacaoFisica(dto);
     }
 }

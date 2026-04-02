@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AvaliacaoFisicaService {
@@ -19,15 +21,16 @@ public class AvaliacaoFisicaService {
     private final IAlunosRepository alunosRepository;
     private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
 
-    public void criarAvaliacaoFisica(AvaliacaoFisicaDto dto) throws BadRequestException {
+    public AvaliacaoFisicaDto criarAvaliacaoFisica(AvaliacaoFisicaDto dto) throws BadRequestException {
          AlunosEntity aluno = alunosRepository.findById(dto.getIdAluno())
                  .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
-        AvaliacoesFisicasEntity avaliacao = aluno.getAvaliacaoFisica();
-        if (avaliacao != null) {
+        if (aluno.getAvaliacaoFisica() != null) {
             throw new BadRequestException("Avaliação física já existe para este aluno");
         }
         aluno.setAvaliacaoFisica(avaliacaoFisicaMapper.toEntity(dto));
-        alunosRepository.save(aluno);
+        AlunosEntity alunoSalvo = alunosRepository.save(aluno);
+        return avaliacaoFisicaMapper.toDto(alunoSalvo.getAvaliacaoFisica());
     }
+
 
 }

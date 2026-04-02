@@ -1,0 +1,54 @@
+package br.com.pedrodev.spring_boot_essentials.service;
+
+import br.com.pedrodev.spring_boot_essentials.database.model.AlunosEntity;
+import br.com.pedrodev.spring_boot_essentials.database.model.AvaliacoesFisicasEntity;
+import br.com.pedrodev.spring_boot_essentials.database.repository.IAlunosRepository;
+import br.com.pedrodev.spring_boot_essentials.dto.AlunoDto;
+import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
+import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
+import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
+import br.com.pedrodev.spring_boot_essentials.mapper.AlunoMapper;
+import br.com.pedrodev.spring_boot_essentials.mapper.AvaliacaoFisicaMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class AlunoService {
+
+    private final IAlunosRepository alunosRepository;
+    private final AlunoMapper alunoMapper;
+    private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
+
+    public AlunoDto criarAluno(AlunoDto alunoDto) throws BadRequestException {
+       try {
+           AlunosEntity aluno = alunosRepository.findByEmail(alunoDto.getEmail())
+                   .orElse(null);
+           if (aluno != null) {
+               throw new BadRequestException("Já existe um aluno cadastrado com esse email");
+           }
+           AlunosEntity alunoEntity = alunoMapper.toEntity(alunoDto);
+           return alunoMapper.toDto(alunosRepository.save(alunoEntity));
+       } catch (Exception e) {
+           throw new BadRequestException("Erro ao criar aluno: " + e.getMessage());
+       }
+    }
+
+    public List<AlunoDto> findAll(){
+        return alunoMapper.toDtoList(alunosRepository.findAll());
+    }
+
+    public AvaliacaoFisicaDto getAlunoAvaliacao(Integer idAluno) throws NotFoundException {
+        AlunosEntity aluno = alunosRepository.findById(idAluno)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
+
+        AvaliacoesFisicasEntity avaliacao = aluno.getAvaliacaoFisica();
+        if (avaliacao == null) {
+            throw new NotFoundException("Avaliação física não encontrada para este aluno");
+        }
+        return avaliacaoFisicaMapper.toDto(avaliacao);
+    }
+
+}

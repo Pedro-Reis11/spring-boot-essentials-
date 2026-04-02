@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(error -> FieldErrorResponse.builder()
                         .field(error.getField())
-                        .message(getCustomMessage(error.getField()))
+                        .message(error.getDefaultMessage())
                         .build())
                 .toList();
 
@@ -58,11 +58,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    private String getCustomMessage(String field) {
-        return switch (field) {
-            case "nome" -> "O nome do exercício é obrigatório";
-            case "grupoMuscular" -> "O grupo muscular é obrigatório";
-            default -> "Campo inválido";
-        };
-    }
 }

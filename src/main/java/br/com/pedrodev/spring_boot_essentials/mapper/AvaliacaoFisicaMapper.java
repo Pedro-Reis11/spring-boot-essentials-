@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AvaliacaoFisicaMapper {
 
+    @Mapping(source = "id", target = "idAluno")
     AvaliacaoFisicaDto toDto(AvaliacoesFisicasEntity avaliacoesFisicasEntity);
 
     List<AvaliacaoFisicaDto> toDtoList(List<AvaliacoesFisicasEntity> avaliacoesFisicasEntityList);
