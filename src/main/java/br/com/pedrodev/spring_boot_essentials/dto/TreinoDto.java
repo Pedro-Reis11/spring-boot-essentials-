@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -18,5 +20,5 @@ public class TreinoDto {
     @NotBlank(message = "O nome do treino é obrigatório")
     private String nome;
     @NotEmpty(message = "A lista de exercícios não pode ser vazia")
-    private Set<Integer> exerciciosIds;
+    private Set<Integer> exerciciosIds = new HashSet<>();
 }

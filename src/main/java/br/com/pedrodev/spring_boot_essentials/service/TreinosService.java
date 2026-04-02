@@ -45,50 +45,60 @@ public class TreinosService {
                         .orElseThrow(() -> new NotFoundException("Exercício com id " + idExercicio + " não encontrado"));
                 exerciciosIds.add(ex);
             }
-            treinos = TreinosEntity.builder()
-                    .nome(dto.getNome())
-                    .aluno(aluno)
-                    .exercicios(exerciciosIds)
-                    .build();
+//            treinos = TreinosEntity.builder()
+//                    .nome(dto.getNome())
+//                    .aluno(aluno)
+//                    .exercicios(exerciciosIds)
+//                    .build();
+//            treinosRepository.save(treinos);
+//            TreinoDto treinoDto = new TreinoDto();
+//            treinoDto.setIdAluno(treinos.getAluno().getId());
+//            treinoDto.setNome(treinos.getNome());
+//
+//            // Mapear a lista/Set de ExerciciosEntity para Set<Integer> de IDs
+//            Set<Integer> ids = treinos.getExercicios().stream()
+//                    .map(ExerciciosEntity::getId)
+//                    .collect(Collectors.toSet());
+//
+//            treinoDto.setExerciciosIds(ids);
+            treinos = treinoMapper.toEntity(dto, aluno, exerciciosIds);
             treinosRepository.save(treinos);
-            TreinoDto treinoDto = new TreinoDto();
-            treinoDto.setIdAluno(treinos.getAluno().getId());
-            treinoDto.setNome(treinos.getNome());
-
-            // Mapear a lista/Set de ExerciciosEntity para Set<Integer> de IDs
-            Set<Integer> ids = treinos.getExercicios().stream()
-                    .map(ExerciciosEntity::getId)
-                    .collect(Collectors.toSet());
-
-            treinoDto.setExerciciosIds(ids);
+            TreinoDto treinoDto = treinoMapper.toDto(treinos);
             return (treinoDto);
         } catch (Exception e) {
             throw e;
         }
     }
 
+//    public List<TreinoDto> findAll() {
+//        List<TreinosEntity> treinos = treinosRepository.findAll();
+//        List<TreinoDto> treinosDto = new ArrayList<>();
+//
+//        for (TreinosEntity treino : treinos) {
+//            TreinoDto dto = new TreinoDto();
+//            dto.setIdAluno(treino.getAluno() != null ? treino.getAluno().getId() : null);
+//            dto.setNome(treino.getNome());
+//
+//            // Mapear exercícios para Set<Integer>
+//            if (treino.getExercicios() != null && !treino.getExercicios().isEmpty()) {
+//                Set<Integer> ids = treino.getExercicios().stream()
+//                        .map(ExerciciosEntity::getId)
+//                        .collect(Collectors.toSet());
+//                dto.setExerciciosIds(ids);
+//            } else {
+//                dto.setExerciciosIds(new HashSet<>()); // garante que não venha null
+//            }
+//
+//            treinosDto.add(dto);
+//        }
+//
+//        return treinosDto;
+//    }
+
     public List<TreinoDto> findAll() {
         List<TreinosEntity> treinos = treinosRepository.findAll();
-        List<TreinoDto> treinosDto = new ArrayList<>();
-
-        for (TreinosEntity treino : treinos) {
-            TreinoDto dto = new TreinoDto();
-            dto.setIdAluno(treino.getAluno() != null ? treino.getAluno().getId() : null);
-            dto.setNome(treino.getNome());
-
-            // Mapear exercícios para Set<Integer>
-            if (treino.getExercicios() != null && !treino.getExercicios().isEmpty()) {
-                Set<Integer> ids = treino.getExercicios().stream()
-                        .map(ExerciciosEntity::getId)
-                        .collect(Collectors.toSet());
-                dto.setExerciciosIds(ids);
-            } else {
-                dto.setExerciciosIds(new HashSet<>()); // garante que não venha null
-            }
-
-            treinosDto.add(dto);
-        }
-
-        return treinosDto;
+        return treinos.stream()
+                .map(treinoMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
