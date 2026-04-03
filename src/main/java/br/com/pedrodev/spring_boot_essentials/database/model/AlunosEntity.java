@@ -24,7 +24,8 @@ public class AlunosEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // A avaliação física é mapeada como um relacionamento OneToOne, onde cada aluno tem uma única avaliação física associada a ele. O cascade = CascadeType.ALL garante que as operações de persistência sejam propagadas para a avaliação física quando o aluno for salvo ou removido. O fetch = FetchType.EAGER indica que a avaliação física deve ser carregada imediatamente junto com o aluno, e orphanRemoval = true garante que a avaliação física seja removida automaticamente quando o aluno for deletado.
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "avaliacao_fisica_id")
     private AvaliacoesFisicasEntity avaliacaoFisica;
 

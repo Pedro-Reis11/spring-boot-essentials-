@@ -17,10 +17,27 @@ public class AvaliacoesFisicasController {
 
     private final AvaliacaoFisicaService avaliacaoFisicaService;
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<AvaliacaoFisicaDto> findAll() {
+        return avaliacaoFisicaService.findAll();
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AvaliacaoFisicaDto createAvaliacaoFisica(@Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
         return avaliacaoFisicaService.criarAvaliacaoFisica(dto);
+    }
+
+    @PutMapping("/{idAluno}")
+    @ResponseStatus(HttpStatus.OK)
+    public AvaliacaoFisicaDto updateAvaliacaoFisica(@PathVariable Integer idAluno, @Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
+        return avaliacaoFisicaService.updateAvaliacaoFisica(idAluno, dto);
+    }
+
+    @DeleteMapping("/{idAluno}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAvaliacaoFisica(@PathVariable Integer idAluno) {
+        avaliacaoFisicaService.deleteAvaliacaoFisica(idAluno);
     }
 }

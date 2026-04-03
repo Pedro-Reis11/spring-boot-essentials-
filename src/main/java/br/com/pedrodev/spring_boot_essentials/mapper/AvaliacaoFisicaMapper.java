@@ -4,9 +4,7 @@ import br.com.pedrodev.spring_boot_essentials.database.model.AvaliacoesFisicasEn
 import br.com.pedrodev.spring_boot_essentials.database.model.ExerciciosEntity;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
 import br.com.pedrodev.spring_boot_essentials.dto.ExerciciosDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -19,4 +17,7 @@ public interface AvaliacaoFisicaMapper {
     List<AvaliacaoFisicaDto> toDtoList(List<AvaliacoesFisicasEntity> avaliacoesFisicasEntityList);
 
     AvaliacoesFisicasEntity toEntity(AvaliacaoFisicaDto avaliacaoFisicaDto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromDto(AvaliacaoFisicaDto dto, @MappingTarget AvaliacoesFisicasEntity entity);
 }
