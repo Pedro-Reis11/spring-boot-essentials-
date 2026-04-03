@@ -6,15 +6,12 @@ import br.com.pedrodev.spring_boot_essentials.database.model.TreinosEntity;
 import br.com.pedrodev.spring_boot_essentials.database.repository.IAlunosRepository;
 import br.com.pedrodev.spring_boot_essentials.database.repository.IExerciciosRepository;
 import br.com.pedrodev.spring_boot_essentials.database.repository.ITreinosRepository;
-import br.com.pedrodev.spring_boot_essentials.dto.ExerciciosDto;
 import br.com.pedrodev.spring_boot_essentials.dto.TreinoDto;
 import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.TreinoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +26,7 @@ public class TreinosService {
     private final ITreinosRepository treinosRepository;
     private final TreinoMapper treinoMapper;
 
-
+    //Post
     public TreinoDto criarTreino(TreinoDto dto) throws NotFoundException, BadRequestException {
         try {
             Set<ExerciciosEntity> exerciciosIds = new HashSet<>();
@@ -94,7 +91,7 @@ public class TreinosService {
 //
 //        return treinosDto;
 //    }
-
+    //Get
     public List<TreinoDto> findAll() {
         List<TreinosEntity> treinos = treinosRepository.findAll();
         return treinos.stream()

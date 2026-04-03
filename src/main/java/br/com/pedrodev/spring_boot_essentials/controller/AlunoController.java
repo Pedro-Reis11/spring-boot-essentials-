@@ -37,4 +37,16 @@ public class AlunoController {
     public AlunoDto criarAluno(@Valid @RequestBody AlunoDto alunoDto) throws BadRequestException {
         return alunoService.criarAluno(alunoDto);
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public AlunoDto updateAluno(@PathVariable Integer id, @Valid @RequestBody AlunoDto dto){
+        return alunoService.updateAluno(id,dto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAluno(@PathVariable Integer id){
+            alunoService.deletarAluno(id);
+    }
 }

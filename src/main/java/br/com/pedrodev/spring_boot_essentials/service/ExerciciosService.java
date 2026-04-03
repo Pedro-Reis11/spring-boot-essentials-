@@ -3,6 +3,7 @@ package br.com.pedrodev.spring_boot_essentials.service;
 import br.com.pedrodev.spring_boot_essentials.database.model.ExerciciosEntity;
 import br.com.pedrodev.spring_boot_essentials.database.repository.IExerciciosRepository;
 import br.com.pedrodev.spring_boot_essentials.dto.ExerciciosDto;
+import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.ExerciciosMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ExerciciosService {
 
     public ExerciciosDto update(String nome, ExerciciosDto dto) {
         ExerciciosEntity entity = exerciciosRepository.findByNome(nome)
-                .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Exercício não encontrado"));
         exerciciosMapper.updateEntityFromDto(dto, entity);
         return exerciciosMapper.toDto(exerciciosRepository.save(entity));
     }

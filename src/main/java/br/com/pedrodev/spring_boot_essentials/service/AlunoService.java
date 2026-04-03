@@ -11,6 +11,7 @@ import br.com.pedrodev.spring_boot_essentials.mapper.AlunoMapper;
 import br.com.pedrodev.spring_boot_essentials.mapper.AvaliacaoFisicaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,19 @@ public class AlunoService {
             throw new NotFoundException("Avaliação física não encontrada para este aluno");
         }
         return avaliacaoFisicaMapper.toDto(avaliacao);
+    }
+
+    public AlunoDto updateAluno(Integer id, AlunoDto dto) throws NotFoundException {
+        AlunosEntity aluno = alunosRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
+        alunoMapper.updateEntityFromDto(dto,aluno);
+        alunosRepository.save(aluno);
+        return alunoMapper.toDto(aluno);
+    }
+
+    @Transactional
+    public void deletarAluno(Integer id){
+        alunosRepository.deleteById(id);
     }
 
 }
