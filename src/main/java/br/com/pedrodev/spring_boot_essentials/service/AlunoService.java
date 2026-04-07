@@ -22,7 +22,7 @@ public class AlunoService {
     private final IAlunosRepository alunosRepository;
     private final AlunoMapper alunoMapper;
     private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
-
+    //Post
     public AlunoDto criarAluno(AlunoDto alunoDto) throws BadRequestException {
        try {
            AlunosEntity aluno = alunosRepository.findByEmail(alunoDto.getEmail())
@@ -36,11 +36,11 @@ public class AlunoService {
            throw new BadRequestException("Erro ao criar aluno: " + e.getMessage());
        }
     }
-
+    //GetAll
     public List<AlunoDto> findAll(){
         return alunoMapper.toDtoList(alunosRepository.findAll());
     }
-
+    //Get
     public AvaliacaoFisicaDto getAlunoAvaliacao(Integer idAluno) throws NotFoundException {
         AlunosEntity aluno = alunosRepository.findById(idAluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
@@ -51,7 +51,7 @@ public class AlunoService {
         }
         return avaliacaoFisicaMapper.toDto(avaliacao);
     }
-
+    //Put
     public AlunoDto updateAluno(Integer id, AlunoDto dto) throws NotFoundException {
         AlunosEntity aluno = alunosRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
@@ -59,7 +59,7 @@ public class AlunoService {
         alunosRepository.save(aluno);
         return alunoMapper.toDto(aluno);
     }
-
+    //Delete
     @Transactional
     public void deletarAluno(Integer id){
         alunosRepository.deleteById(id);

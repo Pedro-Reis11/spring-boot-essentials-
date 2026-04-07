@@ -98,4 +98,30 @@ public class TreinosService {
                 .map(treinoMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public TreinoDto updateTreino(Integer idTreino, TreinoDto dto) throws NotFoundException {
+        TreinosEntity treino = treinosRepository
+                .findByIdAndAlunoId(idTreino, dto.getIdAluno())
+                .orElseThrow(() -> new NotFoundException("Treino não encontrado para esse aluno"));
+        Set<ExerciciosEntity> exerciciosIds = new HashSet<>(
+                exerciciosRepository.findAllById(dto.getExerciciosIds())
+        );
+        if (exerciciosIds.size() != dto.getExerciciosIds().size()) {
+            throw new NotFoundException("Um ou mais exercícios não foram encontrados");
+        }
+        if (dto.getNome() != null) {
+            treino.setNome(dto.getNome());
+        }
+        treino.setExercicios(exerciciosIds);
+        treinosRepository.save(treino);
+        return treinoMapper.toDto(treino);
+    }
+
+    public void deleteTreino(Integer idTreino, Integer idAluno) throws NotFoundException {
+        TreinosEntity treino = treinosRepository
+                .findByIdAndAlunoId(idTreino, idAluno)
+                .orElseThrow(() -> new NotFoundException("Treino não encontrado para esse aluno"));
+
+        treinosRepository.delete(treino);
+    }
 }

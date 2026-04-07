@@ -29,4 +29,19 @@ public class TreinoController {
     public TreinoDto criarTreino(@Valid @RequestBody TreinoDto dto) throws NotFoundException, BadRequestException {
         return treinosService.criarTreino(dto);
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public TreinoDto atualizarTreino(@PathVariable Integer id, @Valid @RequestBody TreinoDto dto) throws NotFoundException {
+        return treinosService.updateTreino(id, dto);
+    }
+
+    @DeleteMapping("/alunos/{idAluno}/treinos/{idTreino}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarTreino(
+            @PathVariable Integer idAluno,
+            @PathVariable Integer idTreino) throws NotFoundException {
+
+        treinosService.deleteTreino(idTreino, idAluno);
+    }
 }
