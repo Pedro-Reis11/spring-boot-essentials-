@@ -9,6 +9,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AlunoMapper {
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "avaliacaoFisica", target = "avaliacaoFisica")
     AlunoDto toDto(AlunosEntity entity);
 

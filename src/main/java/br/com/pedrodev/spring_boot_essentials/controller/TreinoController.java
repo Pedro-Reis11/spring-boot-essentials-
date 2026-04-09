@@ -20,8 +20,14 @@ public class TreinoController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TreinoDto> findAll(){
+    public List<TreinoDto> findAll() {
         return treinosService.findAll();
+    }
+
+    @GetMapping("/{idAluno}/treinos")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TreinoDto> listarTreinosPorAluno(@PathVariable Integer idAluno) throws NotFoundException {
+        return treinosService.listarTreinosPorAluno(idAluno);
     }
 
     @PostMapping

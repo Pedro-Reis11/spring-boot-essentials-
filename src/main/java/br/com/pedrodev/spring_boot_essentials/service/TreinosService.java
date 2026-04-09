@@ -99,6 +99,15 @@ public class TreinosService {
                 .collect(Collectors.toList());
     }
 
+    public List<TreinoDto> listarTreinosPorAluno(Integer idAluno) throws NotFoundException {
+        if(!alunosRepository.existsById(idAluno)){
+            throw new NotFoundException("Aluno não encontrado");
+        }
+        return treinosRepository.findAllByAlunoId(idAluno).stream()
+                .map(treinoMapper::toDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public TreinoDto updateTreino(Integer idTreino, TreinoDto dto) throws NotFoundException {
         TreinosEntity treino = treinosRepository
                 .findByIdAndAlunoId(idTreino, dto.getIdAluno())

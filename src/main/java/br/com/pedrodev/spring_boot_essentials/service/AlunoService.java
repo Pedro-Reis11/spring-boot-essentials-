@@ -3,17 +3,21 @@ package br.com.pedrodev.spring_boot_essentials.service;
 import br.com.pedrodev.spring_boot_essentials.database.model.AlunosEntity;
 import br.com.pedrodev.spring_boot_essentials.database.model.AvaliacoesFisicasEntity;
 import br.com.pedrodev.spring_boot_essentials.database.repository.IAlunosRepository;
+import br.com.pedrodev.spring_boot_essentials.database.repository.ITreinosRepository;
 import br.com.pedrodev.spring_boot_essentials.dto.AlunoDto;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
+import br.com.pedrodev.spring_boot_essentials.dto.TreinoDto;
 import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.AlunoMapper;
 import br.com.pedrodev.spring_boot_essentials.mapper.AvaliacaoFisicaMapper;
+import br.com.pedrodev.spring_boot_essentials.mapper.TreinoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,8 @@ public class AlunoService {
     private final IAlunosRepository alunosRepository;
     private final AlunoMapper alunoMapper;
     private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
+    private final ITreinosRepository treinosRepository;
+    private final TreinoMapper treinoMapper;
     //Post
     public AlunoDto criarAluno(AlunoDto alunoDto) throws BadRequestException {
        try {
@@ -51,6 +57,7 @@ public class AlunoService {
         }
         return avaliacaoFisicaMapper.toDto(avaliacao);
     }
+
     //Put
     public AlunoDto updateAluno(Integer id, AlunoDto dto) throws NotFoundException {
         AlunosEntity aluno = alunosRepository.findById(id)

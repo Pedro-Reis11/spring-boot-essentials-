@@ -1,6 +1,5 @@
 package br.com.pedrodev.spring_boot_essentials.controller;
 
-import br.com.pedrodev.spring_boot_essentials.database.model.AlunosEntity;
 import br.com.pedrodev.spring_boot_essentials.dto.AlunoDto;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
 import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
@@ -22,7 +21,7 @@ public class AlunoController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AlunoDto> findAll(){
+    public List<AlunoDto> findAll() {
         return alunoService.findAll();
     }
 
@@ -40,13 +39,13 @@ public class AlunoController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AlunoDto updateAluno(@PathVariable Integer id, @Valid @RequestBody AlunoDto dto){
-        return alunoService.updateAluno(id,dto);
+    public AlunoDto updateAluno(@PathVariable Integer id, @Valid @RequestBody AlunoDto dto) {
+        return alunoService.updateAluno(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAluno(@PathVariable Integer id){
-            alunoService.deletarAluno(id);
+    public void deleteAluno(@PathVariable Integer id) {
+        alunoService.deletarAluno(id);
     }
 }
