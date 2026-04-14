@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Academia</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-page:        #f0f2f5;
+            --bg-card:        #ffffff;
+            --bg-input:       #f9fafb;
+            --bg-input-focus: #ffffff;
+            --bg-thead:       #f3f4f6;
+            --bg-output:      #f9fafb;
+            --bg-exlist:      #f9fafb;
+            --bg-badge:       #f3f4f6;
+            --bg-modal:       #ffffff;
+            --bg-close:       #f3f4f6;
+            --bg-close-hov:   #e5e7eb;
+            --bg-toggle:      #e5e7eb;
+            --text-primary:   #1a1a2e;
+            --text-secondary: #374151;
+            --text-muted:     #6b7280;
+            --text-faint:     #9ca3af;
+            --text-output:    #4b5563;
+            --text-input:     #374151;
+            --border:         #e5e7eb;
+            --border-input:   #d1d5db;
+            --border-row:     #f3f4f6;
+            --border-label:   #f3f4f6;
+            --hover-row:      #f9fafb;
+            --shadow-card:    0 1px 3px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04);
+            --shadow-modal:   0 8px 40px rgba(0,0,0,0.18);
+            --icon-purple:    #ede9fe;
+            --icon-blue:      #dbeafe;
+            --icon-green:     #dcfce7;
+            --icon-amber:     #fef3c7;
+            --btn-edit-bg:    #dbeafe; --btn-edit-txt:    #1d4ed8;
+            --btn-del-bg:     #fee2e2; --btn-del-txt:     #dc2626;
+            --btn-trn-bg:     #dcfce7; --btn-trn-txt:     #16a34a;
+            --btn-ghost-bg:   #f3f4f6; --btn-ghost-txt:   #374151;
+            --ver-bg:         #e5e7eb; --ver-txt:         #6b7280;
+        }
+
+        [data-theme="dark"] {
+            --bg-page:        #0f1117;
+            --bg-card:        #1a1d27;
+            --bg-input:       #13151f;
+            --bg-input-focus: #1e2130;
+            --bg-thead:       #13151f;
+            --bg-output:      #13151f;
+            --bg-exlist:      #13151f;
+            --bg-badge:       #1e2130;
+            --bg-modal:       #1a1d27;
+            --bg-close:       #252836;
+            --bg-close-hov:   #2e3245;
+            --bg-toggle:      #252836;
+            --text-primary:   #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted:     #94a3b8;
+            --text-faint:     #64748b;
+            --text-output:    #94a3b8;
+            --text-input:     #cbd5e1;
+            --border:         #252836;
+            --border-input:   #2e3245;
+            --border-row:     #1e2130;
+            --border-label:   #1e2130;
+            --hover-row:      #1e2130;
+            --shadow-card:    0 1px 3px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2);
+            --shadow-modal:   0 8px 40px rgba(0,0,0,0.6);
+            --icon-purple:    #2e2060;
+            --icon-blue:      #1e3a5f;
+            --icon-green:     #14432a;
+            --icon-amber:     #3d2c00;
+            --btn-edit-bg:    #1e3a5f; --btn-edit-txt:    #93c5fd;
+            --btn-del-bg:     #3b1515; --btn-del-txt:     #fca5a5;
+            --btn-trn-bg:     #14432a; --btn-trn-txt:     #86efac;
+            --btn-ghost-bg:   #252836; --btn-ghost-txt:   #cbd5e1;
+            --ver-bg:         #252836; --ver-txt:         #94a3b8;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: background-color 0.25s, color 0.25s;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+        .page-header .logo {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        .badge-version {
+            font-size: 0.78rem; color: var(--ver-txt); background: var(--ver-bg);
+            padding: 2px 10px; border-radius: 20px; margin-left: 6px; font-weight: 500;
+        }
+
+        .theme-toggle {
+            margin-left: auto;
+            display: flex; align-items: center; gap: 8px;
+            cursor: pointer;
+            background: var(--bg-toggle);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 14px 6px 10px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: background 0.2s, border 0.2s, opacity 0.15s;
+            user-select: none;
+        }
+        .theme-toggle:hover { opacity: 0.75; }
+        .theme-toggle .ticon { font-size: 16px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 650px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border);
+            transition: background 0.25s, border-color 0.25s;
+        }
+        .card-title {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
+            margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+        }
+        .card-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0; transition: background 0.25s;
+        }
+        .icon-purple { background: var(--icon-purple); }
+        .icon-blue   { background: var(--icon-blue); }
+        .icon-green  { background: var(--icon-green); }
+        .icon-amber  { background: var(--icon-amber); }
+
+        input[type="text"], input[type="email"], input[type="number"] {
+            width: 100%; padding: 8px 12px;
+            border: 1px solid var(--border-input); border-radius: 8px;
+            font-size: 0.875rem; color: var(--text-input); background: var(--bg-input);
+            margin-bottom: 8px;
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.25s;
+            outline: none;
+        }
+        input::placeholder { color: var(--text-faint); }
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+            background: var(--bg-input-focus);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+            font-size: 0.875rem; font-weight: 500;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover  { opacity: 0.82; }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
+        .btn-sm { padding: 5px 11px; font-size: 0.78rem; border-radius: 6px; }
+        .btn-edit    { background: var(--btn-edit-bg);  color: var(--btn-edit-txt); }
+        .btn-delete  { background: var(--btn-del-bg);   color: var(--btn-del-txt); }
+        .btn-treinos { background: var(--btn-trn-bg);   color: var(--btn-trn-txt); }
+        .btn-ghost   { background: var(--btn-ghost-bg); color: var(--btn-ghost-txt); }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+        .output-box {
+            margin-top: 10px; padding: 10px 14px;
+            background: var(--bg-output); border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.845rem; color: var(--text-output);
+            min-height: 44px; line-height: 1.6;
+            transition: background 0.25s, border-color 0.25s;
+        }
+        .output-box ul { padding-left: 1.1rem; }
+        .output-box li { margin-bottom: 4px; }
+
+        .table-wrapper { overflow-x: auto; margin-top: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.865rem; }
+        thead th {
+            background: var(--bg-thead); color: var(--text-muted);
+            font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.05em; padding: 10px 14px; text-align: left;
+            border-bottom: 1px solid var(--border); transition: background 0.25s;
+        }
+        tbody tr { border-bottom: 1px solid var(--border-row); transition: background 0.1s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--hover-row); }
+        tbody td { padding: 11px 14px; color: var(--text-secondary); vertical-align: middle; }
+        .td-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        .badge-avaliacao { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.78rem; color: var(--text-muted); }
+        .badge-avaliacao span {
+            background: var(--bg-badge); border-radius: 6px;
+            padding: 2px 8px; white-space: nowrap; transition: background 0.25s;
+        }
+        .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--text-faint); font-size: 0.875rem; }
+
+        .section-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 0.75rem; margin-top: 0.25rem;
+        }
+
+        .modal {
+            display: none; position: fixed; z-index: 999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(5,5,15,0.55); backdrop-filter: blur(2px);
+            animation: fadeOverlay 0.2s ease;
+        }
+        @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: var(--bg-modal); margin: 8% auto;
+            padding: 1.75rem; width: 440px; max-width: 95vw;
+            border-radius: 16px; border: 1px solid var(--border);
+            box-shadow: var(--shadow-modal);
+            animation: slideModal 0.25s cubic-bezier(.34,1.3,.64,1);
+            position: relative; transition: background 0.25s;
+        }
+        @keyframes slideModal {
+            from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+        .modal-header h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .modal-close {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--bg-close); border: none; cursor: pointer;
+            font-size: 15px; color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .modal-close:hover { background: var(--bg-close-hov); }
+
+        .exercicios-list {
+            max-height: 180px; overflow-y: auto;
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px 12px; background: var(--bg-exlist); margin-bottom: 12px;
+            transition: background 0.25s;
+        }
+        .exercicios-list label {
+            display: flex; align-items: center; gap: 8px; padding: 5px 0;
+            font-size: 0.875rem; color: var(--text-secondary); cursor: pointer;
+            border-bottom: 1px solid var(--border-label);
+        }
+        .exercicios-list label:last-child { border-bottom: none; }
+        .exercicios-list input[type="checkbox"] {
+            width: 15px; height: 15px; margin: 0; padding: 0;
+            accent-color: #6366f1; flex-shrink: 0;
+        }
+
+        [data-theme="dark"] ::-webkit-scrollbar { width: 6px; }
+        [data-theme="dark"] ::-webkit-scrollbar-track { background: #13151f; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2e3245; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="logo">🏋️</div>
+        <div>
+            <h1>API Academia <span class="badge-version">v1.0</span></h1>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span class="ticon" id="toggleIcon">🌙</span>
+            <span id="toggleLabel">Dark</span>
+        </button>
+    </div>
+
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-title"><div class="card-icon icon-purple">🗂️</div>Lista de Treinos</div>
+            <button class="btn btn-primary" id="loadButton" style="width:100%">⚡ Carregar Treinos</button>
+            <div class="output-box" id="output">Clique no botão para carregar.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><div class="card-icon icon-green">📋</div>Treinos do Aluno</div>
+            <div id="treinosAluno" class="output-box" style="margin-top:0; min-height:88px;">
+                Clique em "Treinos" em um aluno para visualizar.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><div class="card-icon icon-blue">➕</div>Criar Novo Aluno</div>
+            <input type="text"  id="nomeAluno"  placeholder="Nome do aluno" />
+            <input type="email" id="emailAluno" placeholder="Email do aluno" />
+            <button class="btn btn-primary" onclick="criarAluno()" style="width:100%; margin-top:2px;">Criar Aluno</button>
+            <div id="outputAluno" class="output-box">Preencha os dados e clique em criar.</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.25rem;">
+        <div class="card-title"><div class="card-icon icon-blue">👥</div>Lista de Alunos</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Nome</th><th>Email</th><th>Avaliação Física</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="tabelaAlunos">
+                    <tr><td colspan="4" class="empty-state">Carregando alunos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title"><div class="card-icon icon-amber">📊</div>Gerenciar Avaliação Física</div>
+        <div class="grid-2" style="margin-bottom:0; gap:8px;">
+            <input type="number" id="idAlunoAvaliacao" placeholder="ID do Aluno" />
+            <input type="number" id="peso"             placeholder="Peso (kg)" />
+            <input type="number" id="altura" step="0.01" placeholder="Altura (m)" />
+            <input type="number" id="pgc"              placeholder="% Gordura Corporal" />
+        </div>
+        <div class="btn-group">
+            <button onclick="listarAvaliacoes()"   class="btn btn-sm btn-ghost">📋 Listar</button>
+            <button onclick="criarAvaliacao()"     class="btn btn-sm btn-primary">➕ Criar</button>
+            <button onclick="atualizarAvaliacao()" class="btn btn-sm btn-edit">✏️ Atualizar</button>
+            <button onclick="deletarAvaliacao()"   class="btn btn-sm btn-delete">🗑️ Excluir</button>
+        </div>
+        <div id="outputAvaliacao" class="output-box">Ações aparecerão aqui...</div>
+    </div>
+
+    <div id="modalTreino" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏋️ Criar Treino</h2>
+                <button class="modal-close" onclick="fecharModal()">✕</button>
+            </div>
+            <div class="section-label">Nome do treino</div>
+            <input type="text" id="nomeTreino" placeholder="Ex: Treino A — Superior" />
+            <div class="section-label">Exercícios disponíveis</div>
+            <div id="listaExercicios" class="exercicios-list">Carregando exercícios...</div>
+            <button class="btn btn-primary" onclick="criarTreinoSelecionado()" style="width:100%;">✅ Criar Treino</button>
+            <div id="outputTreino" class="output-box"></div>
+        </div>
+    </div>
+
+    <script>
+        let alunoSelecionado = null;
+
+        // ===== DARK MODE =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('toggleIcon').textContent  = isDark ? '🌙' : '☀️';
+            document.getElementById('toggleLabel').textContent = isDark ? 'Dark' : 'Light';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('toggleIcon').textContent  = '☀️';
+                document.getElementById('toggleLabel').textContent = 'Light';
+            }
+        })();
+
+        // ===================== TREINOS =====================
+        function abrirCriarTreino(id) {
+            alunoSelecionado = id;
+            document.getElementById('modalTreino').style.display = 'block';
+            document.getElementById('outputTreino').innerHTML = `Criando treino para aluno ID: ${id}`;
+        }
+
+        function fecharModal() {
+            document.getElementById('modalTreino').style.display = 'none';
+            alunoSelecionado = null;
+            document.getElementById('nomeTreino').value = '';
+            document.querySelectorAll('#listaExercicios input').forEach(cb => cb.checked = false);
+        }
+
+        async function carregarExercicios() {
+            const div = document.getElementById('listaExercicios');
+            try {
+                const response = await fetch('http://localhost:8080/exercicios');
+                const exercicios = await response.json();
+                if (!exercicios.length) { div.innerHTML = "Nenhum exercício encontrado."; return; }
+                div.innerHTML = exercicios.map(ex => `
+                    <label><input type="checkbox" value="${ex.id}"> ${ex.nome}</label>
+                `).join('');
+            } catch (error) { div.innerHTML = "Erro ao carregar exercícios"; }
+        }
+
+        async function criarTreinoSelecionado() {
+            const nome = document.getElementById('nomeTreino').value;
+            const output = document.getElementById('outputTreino');
+            const checkboxes = document.querySelectorAll('#listaExercicios input:checked');
+            const exerciciosIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            if (!nome || exerciciosIds.length === 0 || !alunoSelecionado) {
+                output.innerHTML = "Preencha tudo e selecione um aluno!"; return;
+            }
+            try {
+                const response = await fetch('http://localhost:8080/treinos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: nome, idAluno: alunoSelecionado, exerciciosIds: exerciciosIds })
+                });
+                if (!response.ok) throw new Error("Erro ao criar treino");
+                output.innerHTML = "✅ Treino criado com sucesso!";
+                document.getElementById('nomeTreino').value = '';
+                document.querySelectorAll('#listaExercicios input').forEach(cb => cb.checked = false);
+                alunoSelecionado = null;
+                carregarAlunos();
+                fecharModal();
+            } catch (error) { output.innerHTML = error.message; }
+        }
+
+        document.getElementById('loadButton').addEventListener('click', async function() {
+            try {
+                const response = await fetch('http://localhost:8080/treinos');
+                if (!response.ok) throw new Error('Erro ao buscar treinos');
+                const data = await response.json();
+                let output = '<ul>';
+                data.forEach(treino => { output += `<li>${treino.nome} - ${treino.exerciciosIds.join(', ')}</li>`; });
+                output += '</ul>';
+                document.getElementById('output').innerHTML = output;
+            } catch (error) {
+                document.getElementById('output').innerHTML = `Erro: ${error.message}`;
+            }
+        });
+
+        // ===================== ALUNOS (TABELA) =====================
+        async function carregarAlunos() {
+            const tbody = document.getElementById('tabelaAlunos');
+            tbody.innerHTML = "<tr><td colspan='4' class='empty-state'>Carregando alunos...</td></tr>";
+            try {
+                const response = await fetch('http://localhost:8080/alunos');
+                if (!response.ok) throw new Error("Erro ao buscar alunos");
+                const alunos = await response.json();
+                tbody.innerHTML = '';
+                alunos.forEach(aluno => {
+                    const temTreino = aluno.treinos && aluno.treinos.length > 0;
+                    console.log(aluno);
+                    const linha = `
+                        <tr>
+                            <td><strong>${aluno.nome}</strong></td>
+                            <td style="color:var(--text-muted)">${aluno.email}</td>
+                            <td>
+                                <div class="badge-avaliacao">
+                                    <span>⚖️ ${aluno.avaliacaoFisica?.peso} kg</span>
+                                    <span>📏 ${aluno.avaliacaoFisica?.altura} m</span>
+                                    <span>🔥 ${aluno.avaliacaoFisica?.porcentagemGorduraCorporal}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="td-actions">
+                                    <button class="btn btn-sm btn-edit"    onclick="editarAluno(${aluno.id})">✏️ Editar</button>
+                                    <button class="btn btn-sm btn-delete"  onclick="deletarAluno(${aluno.id})">🗑️ Excluir</button>
+                                    <button class="btn btn-sm btn-treinos" onclick="verTreinos(${aluno.id})">📋 Treinos</button>
+                                    ${!temTreino ? `<button class="btn btn-sm btn-primary" onclick="abrirCriarTreino(${aluno.id})">➕ Criar Treino</button>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += linha;
+                });
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">Erro: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===================== DELETE =====================
+        async function deletarAluno(id) {
+            const confirmar = confirm("Tem certeza que deseja excluir?");
+            if (!confirmar) return;
+            try {
+                const response = await fetch(`http://localhost:8080/alunos/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error("Erro ao deletar");
+                alert("Aluno excluído!");
+                carregarAlunos();
+            } catch (error) { alert(error.message); }
+        }
+
+        // ===================== EDIT =====================
+        async function editarAluno(id) {
+            const novoNome  = prompt("Novo nome:");
+            const novoEmail = prompt("Novo email:");
+            if (!novoNome || !novoEmail) return;
+            try {
+                const response = await fetch(`http://localhost:8080/alunos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: novoNome, email: novoEmail })
+                });
+                if (!response.ok) throw new Error("Erro ao atualizar");
+                alert("Aluno atualizado!");
+                carregarAlunos();
+            } catch (error) { alert(error.message); }
+        }
+
+        async function criarAluno() {
+            const nome   = document.getElementById('nomeAluno').value;
+            const email  = document.getElementById('emailAluno').value;
+            const output = document.getElementById('outputAluno');
+            if (!nome || !email) { output.innerHTML = "⚠️ Preencha nome e email!"; return; }
+            try {
+                const response = await fetch('http://localhost:8080/alunos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: nome, email: email })
+                });
+                if (!response.ok) throw new Error("Erro ao criar aluno");
+                const data = await response.json();
+                output.innerHTML = "✅ Aluno criado com sucesso!";
+                console.log("Aluno criado:", data);
+                document.getElementById('nomeAluno').value  = '';
+                document.getElementById('emailAluno').value = '';
+                carregarAlunos();
+            } catch (error) { output.innerHTML = `Erro: ${error.message}`; }
+        }
+
+        // ===================== AUTO LOAD =====================
+        window.onload = () => {
+            carregarAlunos();
+            carregarExercicios();
+        };
+
+        // ===================== VER TREINOS DO ALUNO =====================
+        async function verTreinos(idAluno) {
+            const div = document.getElementById('treinosAluno');
+            div.innerHTML = "Carregando treinos...";
+            try {
+                const response = await fetch(`http://localhost:8080/treinos/${idAluno}/treinos`);
+                if (!response.ok) throw new Error("Erro ao buscar treinos");
+                const treinos = await response.json();
+                if (treinos.length === 0) { div.innerHTML = "Esse aluno não possui treinos."; return; }
+                const lista = treinos.map(t => `
+                    <li><strong>${t.nome}</strong><br>Exercícios: ${t.exerciciosIds?.join(', ') || 'N/A'}</li>
+                `).join('');
+                div.innerHTML = `<ul>${lista}</ul>`;
+            } catch (error) { div.innerHTML = `Erro: ${error.message}`; }
+        }
+
+        // ===================== Crud Avaliacao =====================
+        async function criarAvaliacao() {
+            const idAluno = document.getElementById('idAlunoAvaliacao').value;
+            const peso    = document.getElementById('peso').value;
+            const altura  = document.getElementById('altura').value;
+            const pgc     = document.getElementById('pgc').value;
+            try {
+                const response = await fetch('http://localhost:8080/avaliacoes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idAluno, peso, altura, porcentagemGorduraCorporal: pgc })
+                });
+                if (!response.ok) throw new Error("Erro ao criar avaliação");
+                const data = await response.json();
+                document.getElementById('outputAvaliacao').innerHTML = "✅ Avaliação criada!";
+                console.log(data);
+                carregarAlunos();
+            } catch (error) { document.getElementById('outputAvaliacao').innerHTML = error.message; }
+        }
+
+        async function atualizarAvaliacao() {
+            const idAluno = document.getElementById('idAlunoAvaliacao').value;
+            const peso    = document.getElementById('peso').value;
+            const altura  = document.getElementById('altura').value;
+            const pgc     = document.getElementById('pgc').value;
+            try {
+                const response = await fetch(`http://localhost:8080/avaliacoes/${idAluno}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ peso, altura, porcentagemGorduraCorporal: pgc })
+                });
+                if (!response.ok) throw new Error("Erro ao atualizar avaliação");
+                document.getElementById('outputAvaliacao').innerHTML = "✏️ Avaliação atualizada!";
+                carregarAlunos();
+            } catch (error) { document.getElementById('outputAvaliacao').innerHTML = error.message; }
+        }
+
+        async function deletarAvaliacao() {
+            const idAluno   = document.getElementById('idAlunoAvaliacao').value;
+            const confirmar = confirm("Deseja excluir a avaliação?");
+            if (!confirmar) return;
+            try {
+                const response = await fetch(`http://localhost:8080/avaliacoes/${idAluno}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error("Erro ao deletar avaliação");
+                document.getElementById('outputAvaliacao').innerHTML = "🗑️ Avaliação deletada!";
+                carregarAlunos();
+            } catch (error) { document.getElementById('outputAvaliacao').innerHTML = error.message; }
+        }
+    </script>
+</body>
+</html>
