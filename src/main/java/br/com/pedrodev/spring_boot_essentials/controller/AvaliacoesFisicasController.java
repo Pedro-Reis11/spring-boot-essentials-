@@ -25,13 +25,16 @@ public class AvaliacoesFisicasController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AvaliacaoFisicaDto createAvaliacaoFisica(@Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
+    public AvaliacaoFisicaDto createAvaliacaoFisica(@Valid @RequestBody AvaliacaoFisicaDto dto)
+            throws BadRequestException {
         return avaliacaoFisicaService.criarAvaliacaoFisica(dto);
     }
 
     @PutMapping("/{idAluno}")
     @ResponseStatus(HttpStatus.OK)
-    public AvaliacaoFisicaDto updateAvaliacaoFisica(@PathVariable Integer idAluno, @Valid @RequestBody AvaliacaoFisicaDto dto) throws BadRequestException {
+    public AvaliacaoFisicaDto updateAvaliacaoFisica(@PathVariable Integer idAluno,
+                                                    @Valid @RequestBody AvaliacaoFisicaDto dto)
+            throws BadRequestException {
         return avaliacaoFisicaService.updateAvaliacaoFisica(idAluno, dto);
     }
 

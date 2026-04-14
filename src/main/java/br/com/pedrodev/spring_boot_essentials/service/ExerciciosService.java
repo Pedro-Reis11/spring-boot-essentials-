@@ -17,29 +17,37 @@ public class ExerciciosService {
 
     private final IExerciciosRepository exerciciosRepository;
     private final ExerciciosMapper exerciciosMapper;
+
     //GetAll
     public List<ExerciciosDto> findAll() {
         return exerciciosMapper.toDtoList(exerciciosRepository.findAll());
     }
+
     //GetByGrupo
-    public List<ExerciciosDto> findByGrupoMuscular(String grupoMuscular){
+    public List<ExerciciosDto> findByGrupoMuscular(String grupoMuscular) {
         return exerciciosMapper.toDtoList(exerciciosRepository.findByGrupoMuscular(grupoMuscular));
     }
+
     public List<ExerciciosDto> findAllByOrderByGrupoMuscularAsc() {
         return exerciciosMapper.toDtoList(exerciciosRepository.findAllByOrderByGrupoMuscularAsc());
     }
+
     //Post
+    @Transactional
     public ExerciciosDto save(ExerciciosDto dto) {
         ExerciciosEntity entity = exerciciosMapper.toEntity(dto);
         return exerciciosMapper.toDto(exerciciosRepository.save(entity));
     }
+
     //Put
+    @Transactional
     public ExerciciosDto update(String nome, ExerciciosDto dto) {
         ExerciciosEntity entity = exerciciosRepository.findByNome(nome)
                 .orElseThrow(() -> new NotFoundException("Exercício não encontrado"));
         exerciciosMapper.updateEntityFromDto(dto, entity);
         return exerciciosMapper.toDto(exerciciosRepository.save(entity));
     }
+
     //Delete
     @Transactional
     public void delete(Integer id) {

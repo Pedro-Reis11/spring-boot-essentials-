@@ -6,7 +6,6 @@ import br.com.pedrodev.spring_boot_essentials.database.repository.IAlunosReposit
 import br.com.pedrodev.spring_boot_essentials.database.repository.ITreinosRepository;
 import br.com.pedrodev.spring_boot_essentials.dto.AlunoDto;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
-import br.com.pedrodev.spring_boot_essentials.dto.TreinoDto;
 import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.AlunoMapper;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,24 +26,27 @@ public class AlunoService {
     private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
     private final ITreinosRepository treinosRepository;
     private final TreinoMapper treinoMapper;
+
     //Post
     public AlunoDto criarAluno(AlunoDto alunoDto) throws BadRequestException {
-       try {
-           AlunosEntity aluno = alunosRepository.findByEmail(alunoDto.getEmail())
-                   .orElse(null);
-           if (aluno != null) {
-               throw new BadRequestException("Já existe um aluno cadastrado com esse email");
-           }
-           AlunosEntity alunoEntity = alunoMapper.toEntity(alunoDto);
-           return alunoMapper.toDto(alunosRepository.save(alunoEntity));
-       } catch (Exception e) {
-           throw new BadRequestException("Erro ao criar aluno: " + e.getMessage());
-       }
+        try {
+            AlunosEntity aluno = alunosRepository.findByEmail(alunoDto.getEmail())
+                    .orElse(null);
+            if (aluno != null) {
+                throw new BadRequestException("Já existe um aluno cadastrado com esse email");
+            }
+            AlunosEntity alunoEntity = alunoMapper.toEntity(alunoDto);
+            return alunoMapper.toDto(alunosRepository.save(alunoEntity));
+        } catch (Exception e) {
+            throw new BadRequestException("Erro ao criar aluno: " + e.getMessage());
+        }
     }
+
     //GetAll
-    public List<AlunoDto> findAll(){
+    public List<AlunoDto> findAll() {
         return alunoMapper.toDtoList(alunosRepository.findAll());
     }
+
     //Get
     public AvaliacaoFisicaDto getAlunoAvaliacao(Integer idAluno) throws NotFoundException {
         AlunosEntity aluno = alunosRepository.findById(idAluno)
@@ -62,13 +63,14 @@ public class AlunoService {
     public AlunoDto updateAluno(Integer id, AlunoDto dto) throws NotFoundException {
         AlunosEntity aluno = alunosRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
-        alunoMapper.updateEntityFromDto(dto,aluno);
+        alunoMapper.updateEntityFromDto(dto, aluno);
         alunosRepository.save(aluno);
         return alunoMapper.toDto(aluno);
     }
+
     //Delete
     @Transactional
-    public void deletarAluno(Integer id){
+    public void deletarAluno(Integer id) {
         alunosRepository.deleteById(id);
     }
 
