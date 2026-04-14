@@ -1,9 +1,7 @@
 package br.com.pedrodev.spring_boot_essentials.mapper;
 
 import br.com.pedrodev.spring_boot_essentials.database.model.AvaliacoesFisicasEntity;
-import br.com.pedrodev.spring_boot_essentials.database.model.ExerciciosEntity;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
-import br.com.pedrodev.spring_boot_essentials.dto.ExerciciosDto;
 import org.mapstruct.*;
 
 import java.util.List;

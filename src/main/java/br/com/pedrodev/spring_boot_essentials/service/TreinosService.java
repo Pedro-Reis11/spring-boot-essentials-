@@ -12,6 +12,7 @@ import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.TreinoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class TreinosService {
         }
     }
 
-//    public List<TreinoDto> findAll() {
+    //    public List<TreinoDto> findAll() {
 //        List<TreinosEntity> treinos = treinosRepository.findAll();
 //        List<TreinoDto> treinosDto = new ArrayList<>();
 //
@@ -100,7 +101,7 @@ public class TreinosService {
     }
 
     public List<TreinoDto> listarTreinosPorAluno(Integer idAluno) throws NotFoundException {
-        if(!alunosRepository.existsById(idAluno)){
+        if (!alunosRepository.existsById(idAluno)) {
             throw new NotFoundException("Aluno não encontrado");
         }
         return treinosRepository.findAllByAlunoId(idAluno).stream()

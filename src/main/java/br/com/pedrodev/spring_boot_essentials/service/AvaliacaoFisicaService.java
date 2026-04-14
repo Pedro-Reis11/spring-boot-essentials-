@@ -21,10 +21,11 @@ public class AvaliacaoFisicaService {
     private final IAvaliacoesFisicasRepository avaliacoesFisicasRepository;
     private final IAlunosRepository alunosRepository;
     private final AvaliacaoFisicaMapper avaliacaoFisicaMapper;
+
     //Post
     public AvaliacaoFisicaDto criarAvaliacaoFisica(AvaliacaoFisicaDto dto) throws BadRequestException {
-         AlunosEntity aluno = alunosRepository.findById(dto.getIdAluno())
-                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
+        AlunosEntity aluno = alunosRepository.findById(dto.getIdAluno())
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
         if (aluno.getAvaliacaoFisica() != null) {
             throw new BadRequestException("Avaliação física já existe para este aluno");
         }
@@ -32,10 +33,12 @@ public class AvaliacaoFisicaService {
         AlunosEntity alunoSalvo = alunosRepository.save(aluno);
         return avaliacaoFisicaMapper.toDto(alunoSalvo.getAvaliacaoFisica());
     }
+
     //GetAll
-    public List<AvaliacaoFisicaDto> findAll(){
-     return avaliacaoFisicaMapper.toDtoList(avaliacoesFisicasRepository.findAll());
+    public List<AvaliacaoFisicaDto> findAll() {
+        return avaliacaoFisicaMapper.toDtoList(avaliacoesFisicasRepository.findAll());
     }
+
     //Put
     public AvaliacaoFisicaDto updateAvaliacaoFisica(Integer idAluno, AvaliacaoFisicaDto dto) throws BadRequestException {
         AlunosEntity aluno = alunosRepository.findById(idAluno)
@@ -50,6 +53,7 @@ public class AvaliacaoFisicaService {
         avaliacoesFisicasRepository.save(avaliacao);
         return avaliacaoFisicaMapper.toDto(avaliacao);
     }
+
     //Delete
     @Transactional
     public void deleteAvaliacaoFisica(Integer idAluno) throws NotFoundException {
