@@ -6,6 +6,8 @@ import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import br.com.pedrodev.spring_boot_essentials.service.AlunoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +23,8 @@ public class AlunoController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AlunoDto> findAll() {
-        return alunoService.findAll();
+    public Page<AlunoDto> findAll(Pageable pageable) {
+        return alunoService.findAll(pageable);
     }
 
     @GetMapping("/{idAluno}/avaliacao")

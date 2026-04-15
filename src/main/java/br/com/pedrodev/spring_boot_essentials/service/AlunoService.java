@@ -12,10 +12,10 @@ import br.com.pedrodev.spring_boot_essentials.mapper.AlunoMapper;
 import br.com.pedrodev.spring_boot_essentials.mapper.AvaliacaoFisicaMapper;
 import br.com.pedrodev.spring_boot_essentials.mapper.TreinoMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +43,8 @@ public class AlunoService {
     }
 
     //GetAll
-    public List<AlunoDto> findAll() {
-        return alunoMapper.toDtoList(alunosRepository.findAll());
+    public Page<AlunoDto> findAll(Pageable pageable) {
+        return alunosRepository.findAll(pageable).map(alunoMapper::toDto);
     }
 
     //Get
