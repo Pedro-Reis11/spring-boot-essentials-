@@ -28,6 +28,7 @@ public class AlunoService {
     private final TreinoMapper treinoMapper;
 
     //Post
+    @Transactional
     public AlunoDto criarAluno(AlunoDto alunoDto) throws BadRequestException {
         try {
             AlunosEntity aluno = alunosRepository.findByEmail(alunoDto.getEmail())
