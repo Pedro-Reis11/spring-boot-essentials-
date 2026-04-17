@@ -1,6 +1,8 @@
 package br.com.pedrodev.spring_boot_essentials.database.repository;
 
+
 import br.com.pedrodev.spring_boot_essentials.database.model.AlunosEntity;
+import br.com.pedrodev.spring_boot_essentials.util.AlunoEntityCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ class IAlunosRepositoryTest {
     @Test
     @DisplayName("Deve salvar um aluno no banco de dados")
     void criarAluno() {
-        AlunosEntity aluno = criarAlunoTeste();
+        AlunosEntity aluno = AlunoEntityCreator.criarAlunoParaSerSalvo();
         AlunosEntity alunoSalvo = this.alunosRepository.save(aluno);
 
         Assertions.assertThat(alunoSalvo).isNotNull();
@@ -31,7 +33,7 @@ class IAlunosRepositoryTest {
     @Test
     @DisplayName("Deve atualizar e salvar um aluno no banco de dados")
     void updateAluno() {
-        AlunosEntity aluno = criarAlunoTeste();
+        AlunosEntity aluno = AlunoEntityCreator.criarAlunoParaSerSalvo();
         AlunosEntity alunoSalvo = this.alunosRepository.save(aluno);
 
         alunoSalvo.setNome("Carlos Silva");
@@ -47,7 +49,7 @@ class IAlunosRepositoryTest {
     @Test
     @DisplayName("Deve deletar um aluno no banco de dados")
     void deleteAluno() {
-        AlunosEntity aluno = criarAlunoTeste();
+        AlunosEntity aluno = AlunoEntityCreator.criarAlunoParaSerSalvo();
         AlunosEntity alunoSalvo = this.alunosRepository.save(aluno);
 
         this.alunosRepository.delete(alunoSalvo);
@@ -60,7 +62,7 @@ class IAlunosRepositoryTest {
     @Test
     @DisplayName("Deve encontrar um aluno por nome no banco de dados")
     void findByName() {
-        AlunosEntity aluno = criarAlunoTeste();
+        AlunosEntity aluno = AlunoEntityCreator.criarAlunoParaSerSalvo();
         AlunosEntity alunoSalvo = this.alunosRepository.save(aluno);
 
         String email = alunoSalvo.getEmail();
@@ -69,12 +71,5 @@ class IAlunosRepositoryTest {
 
         Assertions.assertThat(byEmail).isNotEmpty();
         Assertions.assertThat(byEmail.get().getEmail()).isEqualTo(email);
-    }
-
-    private AlunosEntity criarAlunoTeste(){
-        return AlunosEntity.builder()
-                .nome("Carlos")
-                .email("carlos@gmail.com")
-                .build();
     }
 }
