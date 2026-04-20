@@ -9,9 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,8 +45,8 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAluno(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteAluno(@PathVariable Integer id) {
         alunoService.deletarAluno(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
