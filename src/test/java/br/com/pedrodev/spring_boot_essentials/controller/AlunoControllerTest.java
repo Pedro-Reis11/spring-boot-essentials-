@@ -4,7 +4,6 @@ import br.com.pedrodev.spring_boot_essentials.dto.AlunoDto;
 import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
 import br.com.pedrodev.spring_boot_essentials.service.AlunoService;
 import br.com.pedrodev.spring_boot_essentials.util.AlunoCreator;
-import br.com.pedrodev.spring_boot_essentials.util.AlunoEntityCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
