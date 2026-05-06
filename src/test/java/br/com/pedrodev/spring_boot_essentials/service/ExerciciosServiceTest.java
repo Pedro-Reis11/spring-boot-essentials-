@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ExerciciosServiceTest {
@@ -263,6 +262,66 @@ class ExerciciosServiceTest {
             verify(exerciciosMapper).toDtoList(entities);
             assertEquals("Abdomen", result.getFirst().getGrupoMuscular());
             assertEquals("Peito", result.getLast().getGrupoMuscular());
+        }
+    }
+
+    @Nested
+    class Save{
+
+        @Test
+        @DisplayName("Should save an exercise with success")
+        void shouldSaveAnExerciseWithSuccess() {
+            //Arrange
+            var dto = new ExerciciosDto();
+            dto.setNome("Upper");
+            dto.setGrupoMuscular("Peito");
+
+            var entity = new ExerciciosEntity();
+            entity.setNome("Upper");
+            entity.setGrupoMuscular("Peito");
+
+            when(exerciciosMapper.toEntity(dto)).thenReturn(entity);
+            when(exerciciosRepository.save(entity)).thenReturn(entity);
+            when(exerciciosMapper.toDto(entity)).thenReturn(dto);
+
+            //Act
+            var result = exerciciosService.save(dto);
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(dto, result);
+            assertEquals("Upper", result.getNome());
+            assertEquals("Peito", result.getGrupoMuscular());
+
+            var inOrder = inOrder(exerciciosMapper, exerciciosRepository);
+            inOrder.verify(exerciciosMapper).toEntity(dto);
+            inOrder.verify(exerciciosRepository).save(entity);
+            inOrder.verify(exerciciosMapper).toDto(entity);
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException when try save an exercise with a blank attribute")
+        void shouldThrownIllegalArgumentExceptionWhenTrySaveAnExcerciseWithABlankAttribute() {
+            //Arrange
+            var entity = new ExerciciosEntity();
+            entity.setNome("");
+            entity.setGrupoMuscular("Peito");
+            var dto = new ExerciciosDto();
+            dto.setNome("");
+            dto.setGrupoMuscular("Peito");
+
+            when(exerciciosMapper.toEntity(dto)).thenReturn(entity);
+            when(exerciciosRepository.save(entity))
+                    .thenThrow(new IllegalArgumentException("Nome não pode ser vazio"));
+            //Act
+            var exception = assertThrows(IllegalArgumentException.class,
+                    () -> exerciciosService.save(dto));
+
+            //Assert
+            assertEquals("Nome não pode ser vazio", exception.getMessage());
+            verify(exerciciosMapper).toEntity(dto);
+            verify(exerciciosRepository).save(entity);
+            verify(exerciciosMapper, never()).toDto(any());
         }
     }
 
