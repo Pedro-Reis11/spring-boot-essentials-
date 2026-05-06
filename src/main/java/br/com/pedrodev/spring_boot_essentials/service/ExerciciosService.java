@@ -25,6 +25,9 @@ public class ExerciciosService {
 
     //GetByGrupo
     public List<ExerciciosDto> findByGrupoMuscular(String grupoMuscular) {
+        if(grupoMuscular == null) {
+            throw new IllegalArgumentException("Grupo muscular não pode ser nulo");
+        }
         return exerciciosMapper.toDtoList(exerciciosRepository.findByGrupoMuscular(grupoMuscular));
     }
 
