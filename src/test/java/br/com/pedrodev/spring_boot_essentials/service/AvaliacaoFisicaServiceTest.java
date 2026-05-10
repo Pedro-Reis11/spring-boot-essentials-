@@ -118,7 +118,7 @@ class AvaliacaoFisicaServiceTest {
     }
 
     @Nested
-    class FindAll{
+    class FindAll {
 
         @Test
         @DisplayName("Should return all avaliations with success")
@@ -126,7 +126,7 @@ class AvaliacaoFisicaServiceTest {
             //Arrange
             var entities = List.of(createAvaliacaoFisicaEntity(), createAvaliacaoFisicaEntity());
             var dtos = List.of(createAvaliacaoFisicaDto(), createAvaliacaoFisicaDto());
-            
+
             when(repository.findAll()).thenReturn(entities);
             when(mapper.toDtoList(entities)).thenReturn(dtos);
 
@@ -153,6 +153,34 @@ class AvaliacaoFisicaServiceTest {
             assertThat(all).isEmpty();
             verify(repository, times(1)).findAll();
             verify(mapper).toDtoList(Collections.emptyList());
+        }
+    }
+
+    @Nested
+    class Update {
+
+        @Test
+        @DisplayName("Should update a avaliacao with success")
+        void shouldUpdateAAvaliacaoWithSuccess() throws BadRequestException {
+            //Arrange
+            var entity = createAvaliacaoFisicaEntity();
+            var aluno = alunoWithAvaliacaoFisica(entity);
+            var dto = createAvaliacaoFisicaDto();
+            var dtoAtualizado = createAvaliacaoFisicaDto();
+
+            when(alunosRepository.findById(dto.getIdAluno())).thenReturn(Optional.of(aluno));
+            when(repository.save(entity)).thenReturn(entity);
+            when(mapper.toDto(entity)).thenReturn(dtoAtualizado);
+
+            //Act
+            var updated = service.updateAvaliacaoFisica(dto.getIdAluno(), dto);
+
+            //Assert
+            assertThat(updated).isNotNull()
+                    .isEqualTo(dtoAtualizado);
+            verify(alunosRepository, times(1)).findById(dto.getIdAluno());
+            verify(mapper).updateEntityFromDto(dto, entity);
+            verify(repository).save(entity);
         }
     }
 
