@@ -1,0 +1,152 @@
+package br.com.pedrodev.spring_boot_essentials.service;
+
+import br.com.pedrodev.spring_boot_essentials.database.repository.IAlunosRepository;
+import br.com.pedrodev.spring_boot_essentials.database.repository.IExerciciosRepository;
+import br.com.pedrodev.spring_boot_essentials.database.repository.ITreinosRepository;
+import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
+import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
+import br.com.pedrodev.spring_boot_essentials.mapper.TreinoMapper;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static br.com.pedrodev.spring_boot_essentials.util.TreinoTestFactory.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class TreinosServiceTest {
+    @Mock
+    private IAlunosRepository alunosRepository;
+
+    @Mock
+    private IExerciciosRepository exerciciosRepository;
+
+    @Mock
+    private ITreinosRepository repository;
+
+    @Mock
+    private TreinoMapper mapper;
+
+    @InjectMocks
+    private TreinosService service;
+
+
+    @Nested
+    class CreateTreino{
+
+        @Test
+        @DisplayName("Should create treino with success")
+        void shouldCreateTreinoWithSuccess() {
+            //Arrange
+            var dto = createTreinoDto(1, Set.of(10));
+            var aluno = createAluno(1);
+            var exercicio = createExercicio(10);
+            var treino = createTreino(1);
+            var expectDto = createTreinoDto(1, Set.of(10));
+
+            when(alunosRepository.findById(1)).thenReturn(Optional.of(aluno));
+            when(repository.findByNomeAndAlunoId(treino.getNome(), aluno.getId())).thenReturn(Optional.empty());
+            when(exerciciosRepository.findById(exercicio.getId())).thenReturn(Optional.of(exercicio));
+            when(mapper.toEntity(eq(dto), eq(aluno), any())).thenReturn(treino);
+            when(repository.save(treino)).thenReturn(treino);
+            when(mapper.toDto(treino)).thenReturn(expectDto);
+
+
+            //Act
+            var result = service.criarTreino(dto);
+
+            //Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getIdAluno()).isEqualTo(expectDto.getIdAluno());
+            assertThat(result.getNome()).isEqualTo(expectDto.getNome());
+            verify(repository).save(treino);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when aluno not found")
+        void shouldThrowNotFoundExceptionWhenAlunoNotFound() {
+            //Arrange
+            var dto = createTreinoDto(1, Set.of(10));
+
+            when(alunosRepository.findById(dto.getIdAluno())).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.criarTreino(dto));
+            assertThat("Aluno não encontrado").isNotNull();
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should throw BadRequestException when treino already exists")
+        void shouldThrowBadRequestExceptionWhenTreinoAlreadyExists() {
+            //Arrange
+            var dto = createTreinoDto(1, Set.of(10));
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+
+            when(alunosRepository.findById(dto.getIdAluno())).thenReturn(Optional.of(aluno));
+            when(repository.findByNomeAndAlunoId(treino.getNome(), aluno.getId())).thenReturn(Optional.of(treino));
+
+            //Act & Assert
+            assertThrows(BadRequestException.class,
+                    () -> service.criarTreino(dto));
+            assertThat("Treino já existe para esse aluno").isNotNull();
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when exercise not found")
+        void shouldThrowNotFoundExceptionWhenExerciseNotFound() {
+            //Arrange
+            var dto = createTreinoDto(1, Set.of(10));
+            var aluno = createAluno(1);
+
+            when(alunosRepository.findById(dto.getIdAluno())).thenReturn(Optional.of(aluno));
+            when(repository.findByNomeAndAlunoId(dto.getNome(), aluno.getId())).thenReturn(Optional.empty());
+            when(exerciciosRepository.findById(10)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.criarTreino(dto));
+            assertThat("Exercício com id 10 não encontrado").isNotNull();
+            verify(repository, never()).save(any());
+        }
+    }
+
+    @Nested
+    class FindAll{
+
+        @Test
+        @DisplayName("Should return list of treinoDtos")
+        void shouldReturnListOfTreinoDtos() {
+            //Arrange
+            var treino = createTreino(1);
+            var dto = createTreinoDto(1, Set.of());
+
+            when(repository.findAll()).thenReturn(List.of(treino));
+            when(mapper.toDto(treino)).thenReturn(dto);
+
+            //Act
+            var all = service.findAll();
+
+            //Assert
+            assertThat(all).isNotNull();
+            assertEquals(1, all.size());
+            assertEquals(dto.getIdAluno(), all.getFirst().getIdAluno());
+            assertEquals(dto.getNome(), all.getFirst().getNome());
+        }
+    }
+
+}

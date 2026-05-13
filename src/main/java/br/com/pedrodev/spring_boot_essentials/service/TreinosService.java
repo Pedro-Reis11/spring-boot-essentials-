@@ -29,7 +29,7 @@ public class TreinosService {
 
     //Post
     public TreinoDto criarTreino(TreinoDto dto) throws NotFoundException, BadRequestException {
-        try {
+
             Set<ExerciciosEntity> exerciciosIds = new HashSet<>();
             AlunosEntity aluno = alunosRepository.findById(dto.getIdAluno())
                     .orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
@@ -63,9 +63,7 @@ public class TreinosService {
             treinosRepository.save(treinos);
             TreinoDto treinoDto = treinoMapper.toDto(treinos);
             return (treinoDto);
-        } catch (Exception e) {
-            throw e;
-        }
+
     }
 
     //    public List<TreinoDto> findAll() {
