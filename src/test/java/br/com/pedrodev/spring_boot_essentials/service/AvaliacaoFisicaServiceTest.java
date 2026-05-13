@@ -182,6 +182,96 @@ class AvaliacaoFisicaServiceTest {
             verify(mapper).updateEntityFromDto(dto, entity);
             verify(repository).save(entity);
         }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when aluno does not exist")
+        void shouldThrowNotFoundExceptionWhenAlunoDoesntExist() {
+            //Arrange
+            var dto = createAvaliacaoFisicaDtoRequestId(999);
+            when(alunosRepository.findById(999)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.updateAvaliacaoFisica(999, dto));
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when avaliacao is null")
+        void shouldThrowNotFoundExceptionWhenAvaliacaoIsNull() {
+            //Arrange
+            var aluno = alunoWithoutAvaliacaoFisica();
+            var dto = createAvaliacaoFisicaDto();
+            when(alunosRepository.findById(aluno.getId())).thenReturn(Optional.of(aluno));
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.updateAvaliacaoFisica(1, dto));
+            verify(alunosRepository, times(1)).findById(aluno.getId());
+            verify(repository, never()).save(any());
+        }
     }
 
+    @Nested
+    class Delete {
+
+        @Test
+        @DisplayName("Should delete a avaliacao with success")
+        void shouldDelteAAvaliacaoWithSuccess() {
+            //Arrange
+            var aluno = alunoWithAvaliacaoFisica();
+
+            when(alunosRepository.findById(aluno.getId())).thenReturn(Optional.of(aluno));
+
+            //Act
+            service.deleteAvaliacaoFisica(aluno.getId());
+
+            //Assert
+            assertThat(aluno.getAvaliacaoFisica()).isNull();
+            verify(alunosRepository, times(1)).findById(aluno.getId());
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when aluno does not exist")
+        void shouldThrowNotFoundExceptionWhenAlunoDoesntExist() {
+            //Arrange
+            when(alunosRepository.findById(999)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.deleteAvaliacaoFisica(999));
+            verify(alunosRepository, times(1)).findById(999);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when avaliacao is null")
+        void shouldThrowNotFoundExceptionWhenAvaliacaoIsNull() {
+            //Arrange
+            var aluno = alunoWithoutAvaliacaoFisica();
+            when(alunosRepository.findById(aluno.getId())).thenReturn(Optional.of(aluno));
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.deleteAvaliacaoFisica(1));
+            verify(alunosRepository, times(1)).findById(aluno.getId());
+            verify(repository, never()).save(any());
+            assertThat(aluno.getAvaliacaoFisica()).isNull();
+        }
+
+        @Test
+        @DisplayName("Should not call delete directly on repository")
+        void shouldNotCallsDeleteDirectlyOnRepository() {
+            //Arrange
+            var aluno = alunoWithAvaliacaoFisica();
+
+            when(alunosRepository.findById(aluno.getId())).thenReturn(Optional.of(aluno));
+            //Act
+            service.deleteAvaliacaoFisica(1);
+
+            //Assert
+            verify(repository, never()).delete(any());
+            verify(repository, never()).deleteById(any());
+        }
+    }
 }
+
+
