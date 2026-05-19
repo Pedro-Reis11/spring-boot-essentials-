@@ -20,8 +20,7 @@ import java.util.Set;
 
 import static br.com.pedrodev.spring_boot_essentials.util.TreinoTestFactory.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -146,6 +145,78 @@ class TreinosServiceTest {
             assertEquals(1, all.size());
             assertEquals(dto.getIdAluno(), all.getFirst().getIdAluno());
             assertEquals(dto.getNome(), all.getFirst().getNome());
+        }
+
+        @Test
+        @DisplayName("Should return empty list when treinos dont exist")
+        void shouldReturnEmptyListWhenNoTreinosExist() {
+            //Arrange
+            when(repository.findAll()).thenReturn(List.of());
+
+            //Act
+            var result = service.findAll();
+
+            //Assert
+            assertThat(result).isNotNull();
+            assertTrue(result.isEmpty());
+            verify(repository).findAll();
+        }
+    }
+
+    @Nested
+    class ListarTreinosPorAluno{
+
+        @Test
+        @DisplayName("Should return list of treinos for given aluno")
+        void shouldReturnListOfTreinosForGivenAluno() {
+            //Arrange
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+            var dto = createTreinoDto(1, Set.of());
+
+
+            when(alunosRepository.existsById(aluno.getId())).thenReturn(true);
+            when(repository.findAllByAlunoId(aluno.getId())).thenReturn(List.of(treino));
+            when(mapper.toDto(treino)).thenReturn(dto);
+
+            //Act
+            var result = service.listarTreinosPorAluno(aluno.getId());
+
+            //Assert
+            assertThat(result).isNotNull();
+            assertEquals(1, result.size());
+            assertEquals(dto.getIdAluno(), result.getFirst().getIdAluno());
+            verify(repository).findAllByAlunoId(aluno.getId());
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no treinos exist for given aluno")
+        void shouldReturnEmptyListWhenNoTreinosExistForAluno() {
+            //Arrange
+            var aluno = createAluno(1);
+
+            when(alunosRepository.existsById(aluno.getId())).thenReturn(true);
+            when(repository.findAllByAlunoId(aluno.getId())).thenReturn(List.of());
+
+            //Act
+            var result = service.listarTreinosPorAluno(aluno.getId());
+
+            //Assert
+            assertThat(result).isNotNull();
+            assertTrue(result.isEmpty());
+            verify(repository).findAllByAlunoId(aluno.getId());
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when aluno not found")
+        void shouldThrowNotFoundExceptionWhenAlunoNotFound() {
+            //Arrange
+            when(alunosRepository.existsById(1)).thenReturn(false);
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.listarTreinosPorAluno(1));
+            assertThat("Aluno não encontrado").isNotNull();
+            verify(repository, never()).findAllByAlunoId(anyInt());
         }
     }
 
