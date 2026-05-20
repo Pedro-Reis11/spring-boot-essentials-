@@ -220,4 +220,102 @@ class TreinosServiceTest {
         }
     }
 
+    @Nested
+    class Update{
+
+        @Test
+        @DisplayName("Should update treino with success")
+        void shouldUpdateTreinoWithSuccess() {
+            //Arrange
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+            var exercicio = createExercicio(10);
+            var dto = createTreinoDto(1, Set.of(10));
+            var expectDto = createTreinoDto(1, Set.of(10));
+            when(repository.findByIdAndAlunoId(treino.getId(), aluno.getId())).thenReturn(Optional.of(treino));
+            when(exerciciosRepository.findAllById(dto.getExerciciosIds())).thenReturn(List.of(exercicio));
+            when(mapper.toDto(treino)).thenReturn(expectDto);
+
+            //Act
+            var result = service.updateTreino(treino.getId(), dto);
+
+            //Assert
+            assertThat(result).isNotNull();
+            assertEquals(expectDto.getIdAluno(), result.getIdAluno());
+            assertEquals(expectDto.getNome(), result.getNome());
+            assertEquals(expectDto.getExerciciosIds(), result.getExerciciosIds());
+            verify(repository).save(treino);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when treino not found for given aluno")
+        void shouldThrowNotFoundExceptionWhenTreinoNotFoundForALuno() {
+            //Arrange
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+            var dto = createTreinoDto(1, Set.of(10));
+
+            when(repository.findByIdAndAlunoId(treino.getId(), aluno.getId())).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.updateTreino(1, dto));
+            assertThat("Treino não encontrado para esse aluno").isNotNull();
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when exercicio not found for given aluno")
+        void shouldThrowNotFoundExceptionWhenExercicioNotFoundForAluno() {
+            //Arrange
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+            var dto = createTreinoDto(1, Set.of(10));
+
+            when(repository.findByIdAndAlunoId(treino.getId(), aluno.getId())).thenReturn(Optional.of(treino));
+            when(exerciciosRepository.findAllById(dto.getExerciciosIds())).thenReturn(List.of());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.updateTreino(1, dto));
+            assertThat("Um ou mais exercícios não foram encontrados").isNotNull();
+            verify(repository, never()).save(any());
+        }
+    }
+
+    @Nested
+    class Delete{
+
+        @Test
+        @DisplayName("Should delete treino with success")
+        void shouldDeleteTreinoWithSuccess() {
+            //Arrange
+            var aluno = createAluno(1);
+            var treino = createTreino(1);
+
+            when(repository.findByIdAndAlunoId(treino.getId(), aluno.getId())).thenReturn(Optional.of(treino));
+
+            //Act
+            service.deleteTreino(1, 1);
+
+            //Assert
+            verify(repository).delete(treino);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when treino not found")
+        void shouldThrowNotFoundExceptionWhenTreinoNotFound() {
+            //Arrange
+            var aluno = createAluno(1);
+
+            when(repository.findByIdAndAlunoId(1, aluno.getId())).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class,
+                    () -> service.deleteTreino(1, 1));
+            assertThat("Treino não encontrado para esse aluno").isNotNull();
+            verify(repository, never()).delete(any());
+        }
+    }
+
 }
