@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class ITreinosRepositoryTest {
@@ -132,6 +131,100 @@ class ITreinosRepositoryTest {
 
             //Assert
             assertTrue(result.isEmpty());
+        }
+    }
+
+    @Nested
+    class FindAllByAlunoId{
+
+        @Test
+        @DisplayName("Should return all treinos for a given alunoId")
+        void shouldReturnAllTreinosForGivenAlunoId() {
+            //Arrange
+            repository.save(buildTreino("Treino A", aluno));
+            repository.save(buildTreino("Treino B", aluno));
+
+            //Act
+            var result = repository.findAllByAlunoId(aluno.getId());
+
+            //Assert
+            assertEquals(2, result.size());
+            assertTrue(result.stream().anyMatch(t -> t.getAluno().getId().equals(aluno.getId())));
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no treinos found")
+        void shouldReturnEmptyListWhenNoTreinosFound() {
+            //Act
+            var result = repository.findAllByAlunoId(aluno.getId());
+
+            //Assert
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return only treinos belonging to given aluno")
+        void shouldReturnOnlyTreinosBelongingToGivenAluno() {
+            //Arrange
+            var outroAluno = entityManager.persistAndFlush(buildAluno("Maria", "maria@gmail.com"));
+            repository.save(buildTreino("Treino A", aluno));
+            repository.save(buildTreino("Treino B", outroAluno));
+
+            //Act
+            var result = repository.findAllByAlunoId(aluno.getId());
+
+            //Assert
+            assertEquals(1, result.size());
+            assertTrue(result.stream().allMatch(t -> t.getAluno().getId().equals(aluno.getId())));
+            assertEquals("Treino A", result.getFirst().getNome());
+        }
+    }
+
+    @Nested
+    class SaveAndDelete{
+
+        @Test
+        @DisplayName("Should persist treino and generate id")
+        void shouldPersistTreinoAndGenerateId() {
+            //Arrange
+            var treino = buildTreino("Treino A", aluno);
+
+            //Act
+            var save = repository.save(treino);
+
+            //Assert
+            assertNotNull(save.getId());
+            assertEquals("Treino A", save.getNome());
+            assertEquals(aluno.getId(), save.getAluno().getId());
+        }
+
+        @Test
+        @DisplayName("Should delete a treino by id")
+        void shouldDeleteATreinoById() {
+            //Arrange
+            var save = repository.save(buildTreino("Treino A", aluno));
+
+            //Act
+            repository.deleteById(save.getId());
+
+            //Assert
+            assertTrue(repository.findById(save.getId()).isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should update a treino when saved with existing id")
+        void shouldUpdateTreinoWhenSavedWithExistingId() {
+            //Arrange
+            var saved = repository.save(buildTreino("Treino A", aluno));
+            saved.setNome("Treino A - Updated");
+
+            //Act
+            var updated = repository.save(saved);
+
+            //Assert
+            assertTrue(repository.findById(saved.getId()).isPresent());
+            assertEquals(saved.getId(), updated.getId());
+            assertEquals("Treino A - Updated", updated.getNome());
         }
     }
 }
