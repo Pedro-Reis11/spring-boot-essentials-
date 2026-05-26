@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -161,6 +158,38 @@ class IExerciciosRepositoryTest {
 
             //Assert
             assertTrue(result.isEmpty());
+        }
+    }
+
+    @Nested
+    class SaveAndDelete{
+
+        @Test
+        @DisplayName("Should persist exercicio and generate id")
+        void shouldPersistExercicioAndGenerateId() {
+            //Arrange
+            var ex = buildExcercicio("Supino", "Peito");
+
+            //Act
+            var save = repository.save(ex);
+
+            //Assert
+            assertNotNull(save.getId());
+            assertEquals("Supino", save.getNome());
+            assertEquals("Peito", save.getGrupoMuscular());
+        }
+
+        @Test
+        @DisplayName("Should delete exercicio by id")
+        void shouldDeleteExercicioById() {
+            //Arrange
+            var ex = repository.save(buildExcercicio("Supino", "Peito"));
+
+            //Act
+            repository.deleteById(ex.getId());
+
+            //Assert
+            assertTrue(repository.findById(ex.getId()).isEmpty());
         }
     }
 }
