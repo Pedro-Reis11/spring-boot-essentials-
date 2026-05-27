@@ -1,0 +1,66 @@
+services:
+
+  # ── Banco de dados ──────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: academia_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: gym
+      MYSQL_USER: ${MYSQL_USER:-academia}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-academia123}
+    ports:
+      - "3307:3306"          # expõe para ferramentas externas (DBeaver, etc.)
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - academia_net
+
+  # ── Backend Spring Boot ─────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: academia_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy   # aguarda o MySQL estar pronto
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gym?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-academia}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-academia123}
+      MYSQL_USER: ${MYSQL_USER:-academia}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-academia123}
+    ports:
+      - "8080:8080"          # opcional — útil para testar via Swagger/Postman
+    networks:
+      - academia_net
+
+  # ── Frontend Nginx ──────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: academia_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"              # acesse em http://localhost
+    networks:
+      - academia_net
+
+# ── Volumes & Networks ──────────────────────────────────────────
+volumes:
+  mysql_data:
+
+networks:
+  academia_net:
+    driver: bridge
