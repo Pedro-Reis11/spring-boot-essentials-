@@ -3,6 +3,7 @@ package br.com.pedrodev.spring_boot_essentials.service;
 import br.com.pedrodev.spring_boot_essentials.database.model.ExerciciosEntity;
 import br.com.pedrodev.spring_boot_essentials.database.repository.IExerciciosRepository;
 import br.com.pedrodev.spring_boot_essentials.dto.ExerciciosDto;
+import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.ExerciciosMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class ExerciciosService {
 
     //GetByGrupo
     public List<ExerciciosDto> findByGrupoMuscular(String grupoMuscular) {
-        if(grupoMuscular == null) {
-            throw new IllegalArgumentException("Grupo muscular não pode ser nulo");
+        if(grupoMuscular.isBlank()) {
+            throw new BadRequestException("Grupo muscular não pode ser vazio");
         }
         return exerciciosMapper.toDtoList(exerciciosRepository.findByGrupoMuscular(grupoMuscular));
     }
@@ -54,6 +55,9 @@ public class ExerciciosService {
     //Delete
     @Transactional
     public void delete(Integer id) {
+        if(!exerciciosRepository.existsById(id)) {
+            throw new NotFoundException("Exercício não encontrado");
+        }
         exerciciosRepository.deleteById(id);
     }
 }
