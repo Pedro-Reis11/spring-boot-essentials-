@@ -196,17 +196,19 @@ class ExerciciosControllerIT {
     @Test
     @DisplayName("Should delete an exercicio by id")
     void shouldDeleteAnExercicio() {
-        testRestTemplate.postForEntity("/exercicios",
+        var dto = testRestTemplate.postForEntity("/exercicios",
                 buildExercicioDto(), ExerciciosDto.class);
+
+        var exercicio = repository.findByNome(dto.getBody().getNome());
 
         var response = testRestTemplate.exchange("/exercicios/{id}",
                 HttpMethod.DELETE,
                 null,
-                Void.class, 1);
+                Void.class, exercicio.get().getId());
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-        assertThat(repository.findById(1)).isEmpty();
+        assertThat(repository.findById(exercicio.get().getId())).isEmpty();
     }
 
     @Test
