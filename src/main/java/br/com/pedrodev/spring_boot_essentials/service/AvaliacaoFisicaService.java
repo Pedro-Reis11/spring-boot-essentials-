@@ -8,7 +8,7 @@ import br.com.pedrodev.spring_boot_essentials.dto.AvaliacaoFisicaDto;
 import br.com.pedrodev.spring_boot_essentials.exception.NotFoundException;
 import br.com.pedrodev.spring_boot_essentials.mapper.AvaliacaoFisicaMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import br.com.pedrodev.spring_boot_essentials.exception.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +29,11 @@ public class AvaliacaoFisicaService {
         if (aluno.getAvaliacaoFisica() != null) {
             throw new BadRequestException("Avaliação física já existe para este aluno");
         }
-        aluno.setAvaliacaoFisica(avaliacaoFisicaMapper.toEntity(dto));
-        AlunosEntity alunoSalvo = alunosRepository.save(aluno);
-        return avaliacaoFisicaMapper.toDto(alunoSalvo.getAvaliacaoFisica());
+        AvaliacoesFisicasEntity avaliacao = avaliacaoFisicaMapper.toEntity(dto);
+        AvaliacoesFisicasEntity avaliacaoSalva = avaliacoesFisicasRepository.save(avaliacao); // id gerado aqui
+        aluno.setAvaliacaoFisica(avaliacaoSalva);
+        alunosRepository.save(aluno);
+        return avaliacaoFisicaMapper.toDto(avaliacaoSalva);
     }
 
     //GetAll

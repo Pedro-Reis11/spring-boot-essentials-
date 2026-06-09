@@ -1,4 +1,5 @@
 package br.com.pedrodev.spring_boot_essentials.dto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -13,8 +14,9 @@ import java.math.BigDecimal;
 public class AvaliacaoFisicaDto {
 
     @NotNull
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private Integer idAluno;
+
     @NotNull
     private BigDecimal peso;
     @NotNull
@@ -22,4 +24,8 @@ public class AvaliacaoFisicaDto {
     @NotNull
     private BigDecimal porcentagemGorduraCorporal;
 
+    @JsonProperty("idAluno")
+    public void setIdAluno(Integer idAluno) {
+        this.idAluno = idAluno;
+    }
 }
