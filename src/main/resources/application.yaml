@@ -9,9 +9,13 @@ spring:
   jpa:
       hibernate:
           ddl-auto: update
-  show-sql: true
+      show-sql: true
   logging:
     level:
       org:
         Hibernate:
           SQL: DEBUG
+
+jwt:
+  expiration: ${JWT_EXPIRATION:900000}
+  key: ${JWT_KEY:Y7C1Zgx4r0zC838VbQeCP8hRa3pIyfVE8oWqHValpOQMYXn7o30J2KRS0QiZi51X36n7UVgPr2a3m3fOO4duTOtifyVH1Wv6Cjg0qTAaUpKUamCaLkxPBztAJZepj4uRWvJ0MPNusgKGsYDLRnzAHbRlL5TCAOzDQLXUSY8leNCcwy007dIQl6lNfBD6wToZJiCBqwdrESIkijUZdLoRrv0k7OJ8M3q6s379xmlrQ4mGSMGVh40qwAauLewSYnzayozYLzigDOui2CmzZjfdyemrw2OejLl7g8JurBL5kdAXcGd2Y4ygD7i3KWSW9EGpac0SDYLK0gxqkLMqQwhfmeVR}
