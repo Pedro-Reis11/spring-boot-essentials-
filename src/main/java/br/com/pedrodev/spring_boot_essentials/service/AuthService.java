@@ -42,9 +42,9 @@ public class AuthService {
             throw new BadRequestException("Já existe um aluno cadastrado com esse email");
         }
 
-        var role = rolesRepository.findByNome(RoleEnum.ALUNO.name())
+        var role = rolesRepository.findByNome(RoleEnum.ROLE_ALUNO.name())
                 .orElseGet(() -> rolesRepository.save(RolesEntity.builder()
-                        .nome(RoleEnum.ALUNO.name())
+                        .nome(RoleEnum.ROLE_ALUNO.name())
                         .build()));
 
         repository.save(AlunosEntity.builder()

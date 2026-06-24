@@ -2,6 +2,7 @@ package br.com.pedrodev.spring_boot_essentials.controller;
 
 import br.com.pedrodev.spring_boot_essentials.dto.LoginDto;
 import br.com.pedrodev.spring_boot_essentials.dto.RegisterDto;
+import br.com.pedrodev.spring_boot_essentials.dto.TokenDto;
 import br.com.pedrodev.spring_boot_essentials.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody @Valid LoginDto loginDto) {
-        authService.login(loginDto);
+    public TokenDto login(@RequestBody @Valid LoginDto loginDto) {
+        return authService.login(loginDto);
     }
 }
